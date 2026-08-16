@@ -59,3 +59,7 @@ This project uses the [CMake](https://cmake.org/) build system, which allows for
 ## Contributing
 
 If you're interested in helping or contributing to this project, check out the [CONTRIBUTING](/CONTRIBUTING.md) page.
+
+### Notable changes from original repo
+- LEGO1 has all dynamic casts changed to c style casts
+- this port uses string.h instead of memory.h (memory.h does not exist in NXDK, or PDCLIB)
