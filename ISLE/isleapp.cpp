@@ -91,7 +91,9 @@
 #include <psp2/appmgr.h>
 #include <psp2/kernel/clib.h>
 #endif
-
+#ifdef NXDK
+#include "original_xbox/config.h"
+#endif
 DECOMP_SIZE_ASSERT(IsleApp, 0x8c)
 
 // GLOBAL: ISLE 0x410030
@@ -348,8 +350,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 #ifdef __DJGPP__
 	SDL_SetHint("SDL_DOS_ALLOW_DIRECT_FRAMEBUFFER", "1");
 #endif
-
-	Uint32 initFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD;
+// buffer overflow at int2base in miniaudio (0x2ec5a5)
+	Uint32 initFlags = SDL_INIT_VIDEO /*| SDL_INIT_AUDIO*/ | SDL_INIT_GAMEPAD;
 #ifndef __DJGPP__
 	initFlags |= SDL_INIT_HAPTIC;
 #endif
@@ -1006,7 +1008,7 @@ MxResult IsleApp::SetupWindow()
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, g_targetHeight);
 	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, m_fullScreen);
 	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, WINDOW_TITLE);
-#if defined(MINIWIN) && !defined(__3DS__) && !defined(WINDOWS_STORE) && !defined(__vita__) && !defined(__DJGPP__)
+#if defined(MINIWIN) && !defined(__3DS__) && !defined(WINDOWS_STORE) && !defined(__vita__) && !defined(__DJGPP__) && !defined(NXDK)
 	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -1269,6 +1271,9 @@ bool IsleApp::LoadConfig()
 
 #ifdef __EMSCRIPTEN__
 	Emscripten_SetupDefaultConfigOverrides(dict);
+#endif
+#ifdef NXDK
+	OGXB_SetupDefaultConfigOverrides(dict);
 #endif
 
 	MxOmni::SetHD((m_hdPath = SDL_strdup(iniparser_getstring(dict, "isle:diskpath", SDL_GetBasePath()))));

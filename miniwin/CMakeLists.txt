@@ -89,7 +89,9 @@ if(NINTENDO_SWITCH)
   # Remove everything else as not needed.
   list(REMOVE_ITEM GRAPHICS_BACKENDS USE_SOFTWARE_RENDER USE_OPENGL1 USE_OPENGLES2) #USE_SDL_GPU
 endif()
-
+if(NXDK)
+  list(REMOVE_ITEM GRAPHICS_BACKENDS USE_SDL_GPU USE_OPENGL1 USE_OPENGLES2 USE_OPENGLES3)
+endif()
 if(VITA)
   add_subdirectory(src/d3drm/backends/gxm/shaders)
 

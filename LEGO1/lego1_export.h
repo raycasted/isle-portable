@@ -1,3 +1,6 @@
+#ifdef NXDK
+#define LEGO1_STATIC
+#endif
 #ifndef LEGO1_EXPORT_H
 #define LEGO1_EXPORT_H
 

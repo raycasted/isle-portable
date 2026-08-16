@@ -4,7 +4,11 @@
 #include "matrix.h"
 
 #include <math.h>
+#ifdef NXDK
+#include <string.h>
+#else
 #include <memory.h>
+#endif
 
 // FUNCTION: LEGO1 0x10002320
 // FUNCTION: BETA10 0x1000fcb0

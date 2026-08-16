@@ -7,7 +7,11 @@
 #include <SDL3/SDL_platform_defines.h>
 #include <SDL3/SDL_stdinc.h>
 #include <stdlib.h>
+#ifdef NXDK
 #include <string.h>
+#else
+#include <memory.h>
+#endif
 
 DECOMP_SIZE_ASSERT(MxString, 0x10)
 
@@ -195,7 +199,7 @@ void MxString::MapPathToFilesystem(char* p_path)
 	// [library:filesystem]
 	// This function is used to map an internal Windows-style path (found in SI files or in the code)
 	// to an actual file on disk or CD. We have to account for both Windows path separators and case.
-#if !defined(SDL_PLATFORM_WINDOWS)
+#if !defined(SDL_PLATFORM_WINDOWS) && !defined(NXDK)
 	char* path = p_path;
 	while (*path) {
 		if (*path == '\\') {

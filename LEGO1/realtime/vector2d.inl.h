@@ -4,7 +4,11 @@
 #include "vector.h"
 
 #include <math.h>
+#ifdef NXDK
+#include <string.h>
+#else
 #include <memory.h>
+#endif
 
 // FUNCTION: LEGO1 0x10001f80
 // FUNCTION: BETA10 0x10010a20

@@ -2,8 +2,11 @@
 
 #include "decomp.h"
 
-#include <memory.h>
+#ifdef NXDK
 #include <string.h>
+#else
+#include <memory.h>
+#endif
 
 DECOMP_SIZE_ASSERT(LegoStorage, 0x08);
 DECOMP_SIZE_ASSERT(LegoMemory, 0x10);

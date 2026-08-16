@@ -85,9 +85,9 @@ option(ISLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 option(ISLE_WERROR "Treat warnings as errors" OFF)
 cmake_dependent_option(ISLE_USE_DX5 "Build with internal DirectX 5 SDK" "${NOT_MINGW}" "WIN32;CMAKE_SIZEOF_VOID_P EQUAL 4" OFF)
 cmake_dependent_option(ISLE_MINIWIN "Use miniwin" ON "NOT ISLE_USE_DX5" OFF)
-cmake_dependent_option(ISLE_EXTENSIONS "Use extensions" ON "NOT ISLE_USE_DX5;NOT WINDOWS_STORE" OFF)
-cmake_dependent_option(ISLE_USE_LWS "Use libwebsockets for native multiplayer" ON "ISLE_EXTENSIONS;NOT DOS;NOT EMSCRIPTEN;NOT NINTENDO_3DS;NOT NINTENDO_SWITCH;NOT VITA" OFF)
-cmake_dependent_option(ISLE_BUILD_CONFIG "Build CONFIG.EXE application" ON "MSVC OR ISLE_MINIWIN;NOT DOS;NOT NINTENDO_3DS;NOT NINTENDO_SWITCH;NOT WINDOWS_STORE;NOT VITA" OFF)
+cmake_dependent_option(ISLE_EXTENSIONS "Use extensions" OFF "NOT ISLE_USE_DX5;NOT WINDOWS_STORE" OFF)
+cmake_dependent_option(ISLE_USE_LWS "Use libwebsockets for native multiplayer" OFF "ISLE_EXTENSIONS;NOT DOS;NOT EMSCRIPTEN;NOT NINTENDO_3DS;NOT NINTENDO_SWITCH;NOT VITA" OFF)
+cmake_dependent_option(ISLE_BUILD_CONFIG "Build CONFIG.EXE application" OFF "MSVC OR ISLE_MINIWIN;NOT DOS;NOT NINTENDO_3DS;NOT NINTENDO_SWITCH;NOT WINDOWS_STORE;NOT VITA" OFF)
 cmake_dependent_option(ISLE_COMPILE_SHADERS "Compile shaders" ON "SDL_SHADERCROSS_BIN;TARGET Python3::Interpreter" OFF)
 cmake_dependent_option(CMAKE_POSITION_INDEPENDENT_CODE "Build with -fPIC" ON "NOT DOS;NOT VITA" OFF)
 cmake_dependent_option(ISLE_USE_GLIDE "Build with 3dfx Glide support (Voodoo)" ON "DOS" OFF)
@@ -95,7 +95,7 @@ option(ENABLE_CLANG_TIDY "Enable clang-tidy")
 option(DOWNLOAD_DEPENDENCIES "Download dependencies" ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" CACHE PATH "Directory where to put executables and dll")
 set(ISLE_EMSCRIPTEN_HOST "" CACHE STRING "Host URL for Emscripten streaming (e.g., https://test.com)")
-cmake_dependent_option(BUILD_SHARED_LIBS "Build lego1 as a shared library" ON "NOT DOS;NOT EMSCRIPTEN;NOT VITA" OFF)
+cmake_dependent_option(BUILD_SHARED_LIBS "Build lego1 as a shared library" ON "NOT DOS;NOT EMSCRIPTEN;NOT VITA;NOT NXDK" OFF)
 
 if(DOS)
   # DJGPP targets i386 by default.  We use i486 rather than i586 because i586
@@ -264,8 +264,12 @@ if (DOWNLOAD_DEPENDENCIES)
       )
       set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON CACHE BOOL "Disable PCH globally" FORCE)
     else()
-      set(ISLE_SDL3_GIT_REPO "https://github.com/libsdl-org/SDL.git" CACHE STRING "The SDL3 git repo")
-      set(ISLE_SDL3_GIT_TAG "main" CACHE STRING "The SDL3 git tag")
+      if(NXDK)
+        set(ISLE_SDL3_GIT_REPO "https://github.com/raycasted/nxdk-sdl3" CACHE STRING "The SDL3 git repo")
+      else()
+        set(ISLE_SDL3_GIT_REPO "https://github.com/SDL/SDL3" CACHE STRING "The SDL3 git repo")
+      endif()
+      set(ISLE_SDL3_GIT_TAG "master" CACHE STRING "The SDL3 git tag")
       FetchContent_Declare(
         SDL3
         GIT_REPOSITORY "${ISLE_SDL3_GIT_REPO}"
@@ -825,6 +829,12 @@ if (ISLE_BUILD_APP)
       ISLE/3ds/config.cpp
     )
   endif()
+  if(NXDK)
+    target_sources(isle PRIVATE
+      ISLE/original_xbox/config.cpp
+      ISLE/original_xbox/atof.c
+    )
+  endif()
   if(NINTENDO_SWITCH)
     target_sources(isle PRIVATE
       ISLE/switch/config.cpp
@@ -985,7 +995,9 @@ if (MSVC)
   target_link_options(isle PRIVATE "/SAFESEH:NO")
   target_link_options(lego1 PRIVATE "/SAFESEH:NO")
 endif()
-
+if(NXDK)
+  target_link_options(isle PRIVATE "/DEBUG:DWARF")
+endif()
 find_program(CLANGFORMAT_BIN NAMES clang-format)
 if (EXISTS "${CLANGFORMAT_BIN}")
   execute_process(COMMAND "${CLANGFORMAT_BIN}" --version

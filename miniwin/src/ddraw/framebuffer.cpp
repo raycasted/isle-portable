@@ -34,7 +34,7 @@ HRESULT FrameBufferImpl::QueryInterface(const GUID& riid, void** ppvObject)
 // IDirectDrawSurface interface
 HRESULT FrameBufferImpl::AddAttachedSurface(LPDIRECTDRAWSURFACE lpDDSAttachedSurface)
 {
-	if (dynamic_cast<DummySurfaceImpl*>(lpDDSAttachedSurface)) {
+	if ((DummySurfaceImpl*)(lpDDSAttachedSurface)) {
 		return DD_OK;
 	}
 	MINIWIN_NOT_IMPLEMENTED();
@@ -53,7 +53,7 @@ HRESULT FrameBufferImpl::Blt(
 		return DDERR_GENERIC;
 	}
 
-	if (dynamic_cast<FrameBufferImpl*>(lpDDSrcSurface)) {
+	if ((FrameBufferImpl*)(lpDDSrcSurface)) {
 		return Flip(nullptr, DDFLIP_WAIT);
 	}
 

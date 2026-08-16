@@ -4,8 +4,11 @@
 #include "vector.h"
 
 #include <math.h>
+#ifdef NXDK
+#include <string.h>
+#else
 #include <memory.h>
-
+#endif
 // FUNCTION: LEGO1 0x10002870
 // FUNCTION: BETA10 0x10048500
 void Vector4::AddImpl(const float* p_value)

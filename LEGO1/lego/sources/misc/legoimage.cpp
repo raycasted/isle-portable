@@ -2,7 +2,11 @@
 
 #include "decomp.h"
 #include "legostorage.h"
-#include "memory.h"
+#ifdef NXDK
+#include <string.h>
+#else
+#include <memory.h>
+#endif
 
 DECOMP_SIZE_ASSERT(LegoPaletteEntry, 0x03);
 DECOMP_SIZE_ASSERT(LegoImage, 0x310);
