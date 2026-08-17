@@ -367,7 +367,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 		Any_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "LEGO® Island Error", buffer, NULL);
 		return SDL_APP_FAILURE;
 	}
-
+	
 	// [library:window]
 	// Original game checks for an existing instance here.
 	// We don't really need that.
@@ -418,7 +418,6 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 		);
 		return SDL_APP_FAILURE;
 	}
-
 	// Get reference to window
 	*appstate = g_isle->GetWindowHandle();
 

@@ -90,7 +90,18 @@ if(NINTENDO_SWITCH)
   list(REMOVE_ITEM GRAPHICS_BACKENDS USE_SOFTWARE_RENDER USE_OPENGL1 USE_OPENGLES2) #USE_SDL_GPU
 endif()
 if(NXDK)
-  list(REMOVE_ITEM GRAPHICS_BACKENDS USE_SDL_GPU USE_OPENGL1 USE_OPENGLES2 USE_OPENGLES3)
+  list(REMOVE_ITEM GRAPHICS_BACKENDS USE_SDL_GPU USE_OPENGL1 USE_OPENGLES2 USE_OPENGLES3 USE_SOFTWARE_RENDER USE_PALETTE_SW_RENDER)
+  target_sources(miniwin PRIVATE
+      src/d3drm/backends/pbgl/actual.cpp
+      src/d3drm/backends/pbgl/renderer.cpp
+    )
+  target_include_directories(miniwin PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/d3drm/backends/pbgl/include/
+  )
+  list(APPEND GRAPHICS_BACKENDS USE_PBGL)
+  target_link_libraries(miniwin PRIVATE /usr/local/libpbgl.lib)
+  
+
 endif()
 if(VITA)
   add_subdirectory(src/d3drm/backends/gxm/shaders)
